@@ -1,28 +1,53 @@
 import pygame
+from gamestate import Gamestate
 
-def main():
-    # pygame setup
-    pygame.init()
-    screen = pygame.display.set_mode((1280, 720))
-    clock = pygame.time.Clock()
-    running = True
 
-    #event loop
-    while running:
-        # poll for events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+WIDTH, HEIGHT = 896, 896
+ROWS, COLS = 8, 8
+SQUARE_SIZE = WIDTH // COLS
+WHITE = (255, 255, 255)
+BROWN = (160, 82, 45)
 
-        screen.fill("black")
+#window config
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+pygame.display.set_caption("Chess")
 
-        # RENDER YOUR GAME HERE
+images = {}
+gamestate = Gamestate()
 
-        # flip() the display to put your work on screen
-        pygame.display.flip()
+def load_images():
+    pieces = ['bR', 'bN', 'bB', 'bQ', 'bK', 'bP',
+              'wR', 'wN', 'wB', 'wQ', 'wK', 'wP']
+    for piece in pieces:
+        images[piece] = pygame.transform.scale(pygame.image.load(f'assets/{piece}.png'), (64, 128))
 
-        clock.tick(60)  # limits FPS to 60
+def draw_board():
+    colors = [WHITE, BROWN]
+    for row in range(ROWS):
+        for col in range(COLS):
+            color = colors[(row + col) % 2]
+            pygame.draw.rect(screen, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
-    pygame.quit()
+def draw_pieces():
+    for row in range(ROWS):
+        for col in range(COLS):
+            piece = gamestate.board[row][col]
+            if piece != '--':
+                screen.blit(images[piece], (col*112+24,row*112-20))
 
-if __name__ == '__main__': main()
+
+# Game loop
+running = True
+while running:
+    
+    #init_game()
+    load_images()
+    draw_board()
+    draw_pieces()
+    pygame.display.update()
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
