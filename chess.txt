@@ -1,0 +1,10 @@
+White Openings:
+After e4 -> If Pirc Defense (Kings Indian) -> Byrne variation
+         -> If e5 -> Haxo Gambit, Bishop Opening, Trojan Horse Variation
+         -> If c5 (Sicilian) -> Mangarini Variation
+
+Black Openings:
+White e4 -> Sicilian, Karo Cann
+White d4 -> Dutch Defense, Kings Indian
+
+Other -> Dutch Defense, Kings Indian

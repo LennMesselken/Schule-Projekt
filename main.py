@@ -114,7 +114,7 @@ def highlight_squares(screen, gamestate, square_selected):
         start_row, start_column = last_move.start_row, last_move.start_column
         end_row, end_column = last_move.end_row, last_move.end_column
         s = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
-        #s.set_alpha(100)
+        s.set_alpha(90)
         s.fill(pygame.Color((255, 255, 0)))
         screen.blit(s, (start_column * SQUARE_SIZE, start_row * SQUARE_SIZE))
         screen.blit(s, (end_column * SQUARE_SIZE, end_row * SQUARE_SIZE))
@@ -125,7 +125,7 @@ def highlight_squares(screen, gamestate, square_selected):
         if gamestate.board[row][column][0] == gamestate.colors_turn: #player clicks on own piece
             
             s = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
-            #s.set_alpha(100) #color should be transparent so color underneath can be seen
+            s.set_alpha(90) #color should be transparent so color underneath can be seen
             s.fill(pygame.Color((0,255,0)))
             screen.blit(s, (column* SQUARE_SIZE, row * SQUARE_SIZE))
             s.fill(pygame.Color((0,0,255)))
