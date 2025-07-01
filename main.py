@@ -1,4 +1,5 @@
 import pygame
+import time
 from gamestate import Gamestate, Move
 
 
@@ -36,57 +37,73 @@ def main():
     square_selected = () #keeps track of last player click (single tuple)
     player_clicks = [] #keeps track of players clicks (up to two tuples)
     move_made = False
+    game_over = False
     
     # Game loop
     running = True
 
     while running:
         pygame.display.update()
+        gamestate.get_valid_moves()
+        if (gamestate.checkmate == True or gamestate.stalemate == True) and game_over == False:
+            game_over = True
+            if gamestate.checkmate:
+                text = "Checkmate"
+            else:
+                text = "Stalemate"
+            print(text)
+        
+        if game_over == True:
+            time.sleep(1)
+            
+        if not game_over:
     
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: #window quitting
-                running = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: #window quitting
+                    running = False
 
-            elif event.type == pygame.MOUSEBUTTONDOWN: # player clicks
-                location = pygame.mouse.get_pos() # get mouse position (x, y) on click
-                column = location[0] // SQUARE_SIZE
-                row = location[1] // SQUARE_SIZE
+                elif event.type == pygame.MOUSEBUTTONDOWN: # player clicks
+                    location = pygame.mouse.get_pos() # get mouse position (x, y) on click
+                    column = location[0] // SQUARE_SIZE
+                    row = location[1] // SQUARE_SIZE
 
-                if square_selected == (row, column): #player clicks on same square 
-                    square_selected = () # Deselects square
-                    player_clicks = []
+                    if square_selected == (row, column): #player clicks on same square 
+                        square_selected = () # Deselects square
+                        player_clicks = []
 
-                else: #player clicks on new square
-                    if len(player_clicks) == 0: #first piece has to be of turn player
+                    else: #player clicks on new square
+                        if len(player_clicks) == 0: #first piece has to be of turn player
                          #which colors turn
-                        if gamestate.board[row][column][0] == gamestate.colors_turn: #player clicks on own piece
+                            if gamestate.board[row][column][0] == gamestate.colors_turn: #player clicks on own piece
+                                square_selected = (row, column)
+                                player_clicks.append(square_selected)
+                        else:
                             square_selected = (row, column)
                             player_clicks.append(square_selected)
-                    else:
-                        square_selected = (row, column)
-                        player_clicks.append(square_selected)
 
-                if len(player_clicks) == 2: #player has clicked on two different squares
-                    move = Move(player_clicks[0], player_clicks[1], gamestate.board)
-                    valid_moves = gamestate.get_valid_moves()
+                    if len(player_clicks) == 2: #player has clicked on two different squares
+                        move = Move(player_clicks[0], player_clicks[1], gamestate.board)
+                        valid_moves = gamestate.get_valid_moves()
                     #for i in range(len(valid_moves)):
                     #    print(f"valid  ({valid_moves[i].start_row, valid_moves[i].start_column }) => ({valid_moves[i].end_row, valid_moves[i].end_column }) Promotion: {valid_moves[i].promotion}")
 
                     #print(f"actual ({move.start_row, move.start_column }) => ({move.end_row, move.end_column }) Promotion: {move.promotion}")
-                    for i in range(len(valid_moves)):
+                        for i in range(len(valid_moves)):
                         #print(move, valid_moves[i])
-                        if move == valid_moves[i]: #move is valid
-                            gamestate.make_move(valid_moves[i])
+                            if move == valid_moves[i]: #move is valid
+                                gamestate.make_move(valid_moves[i])
                             #gamestate.make_move(move)
-                            move_made = True
-                            square_selected = () #clean up
-                            player_clicks = [] #clean up
+                                move_made = True
+                                square_selected = () #clean up
+                                player_clicks = [] #clean up
                 
-                    if not move_made: #if move was not valid last clicked square is only player click
-                        player_clicks = [square_selected]
+                        if not move_made: #if move was not valid last clicked square is only player click
+                            player_clicks = [square_selected]
 
-                    if move_made: #resets
-                        move_made = False
+                        if move_made: #resets
+                            move_made = False
+                        
+        
                         
 
         draw_gamestate(screen, gamestate, square_selected)
@@ -130,9 +147,12 @@ def highlight_squares(screen, gamestate, square_selected):
             screen.blit(s, (column* SQUARE_SIZE, row * SQUARE_SIZE))
             s.fill(pygame.Color((0,0,255)))
             moves = []
+            valid_moves = []
             moves = gamestate.get_piece_moves(row, column)
+            valid_moves = gamestate.get_valid_moves()
             for i in range(len(moves)):
-                screen.blit(s, (moves[i].end_column * SQUARE_SIZE, moves[i].end_row * SQUARE_SIZE))
+                if moves[i] in valid_moves:
+                    screen.blit(s, (moves[i].end_column * SQUARE_SIZE, moves[i].end_row * SQUARE_SIZE))
     
 
 
@@ -142,6 +162,7 @@ def draw_pieces(screen, gamestate):
             piece = gamestate.board[row][col]
             if piece != '--':
                 screen.blit(images[piece], (col*112+24,row*112-20))
+
 
 if __name__ == "__main__":
     main()
